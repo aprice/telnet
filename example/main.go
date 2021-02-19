@@ -7,10 +7,11 @@ import (
 
 	"github.com/aprice/telnet"
 	"github.com/aprice/telnet/linereader"
+	"github.com/aprice/telnet/options"
 )
 
 func main() {
-	svr := telnet.NewServer(":9999", telnet.HandleFunc(exampleHandler), telnet.NAWSOption)
+	svr := telnet.NewServer(":9999", telnet.HandleFunc(exampleHandler), options.NAWSOption)
 	svr.ListenAndServe()
 }
 
@@ -28,7 +29,7 @@ func exampleHandler(c *telnet.Connection) {
 		}
 	}()
 	time.Sleep(time.Millisecond)
-	nh := c.OptionHandlers[telnet.NAWS].(*telnet.NAWSHandler)
+	nh := c.OptionHandlers[telnet.TeloptNAWS].(*options.NAWSHandler)
 	log.Printf("Client width: %d, height: %d", nh.Width, nh.Height)
 	wg.Wait()
 	log.Printf("Goodbye %s!", c.RemoteAddr())

@@ -3,7 +3,6 @@ package telnet
 import (
 	"fmt"
 	"net"
-	"time"
 )
 
 // Negotiator defines the requirements for a telnet option handler.
@@ -204,9 +203,7 @@ func (c *Connection) fill(requestedBytes int) error {
 		c.buf = buf
 	}
 
-	c.SetReadDeadline(time.Now().Add(time.Microsecond))
 	nn, err := c.Conn.Read(c.buf[c.w:])
-	c.SetReadDeadline(time.Time{})
 	c.w += nn
 	return err
 }

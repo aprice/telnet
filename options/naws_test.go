@@ -1,4 +1,4 @@
-package telnet_test
+package options_test
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/aprice/telnet"
+	"github.com/aprice/telnet/options"
 )
 
 func TestServerNAWS(t *testing.T) {
@@ -36,7 +37,7 @@ func TestServerNAWS(t *testing.T) {
 			t.Error(err)
 		}
 	}()
-	conn := telnet.NewConnection(server, []telnet.Option{telnet.NAWSOption})
+	conn := telnet.NewConnection(server, []telnet.Option{options.NAWSOption})
 	b := make([]byte, 32)
 	n, err := conn.Read(b)
 	if err != nil {
@@ -49,7 +50,7 @@ func TestServerNAWS(t *testing.T) {
 	wg.Wait()
 	conn.Close()
 
-	nw := conn.OptionHandlers[31].(*telnet.NAWSHandler)
+	nw := conn.OptionHandlers[31].(*options.NAWSHandler)
 	if nw.Width != 80 || nw.Height != 20 {
 		t.Logf("%#v", conn)
 		t.Errorf("Expected w %d, h %d, got w %d, h %d", 80, 20, nw.Width, nw.Height)
@@ -59,7 +60,7 @@ func TestServerNAWS(t *testing.T) {
 func TestClientNAWS(t *testing.T) {
 	client, server := net.Pipe()
 	go func() {
-		conn := telnet.NewConnection(client, []telnet.Option{telnet.ExposeNAWS})
+		conn := telnet.NewConnection(client, []telnet.Option{options.ExposeNAWS})
 		b := make([]byte, 32)
 		conn.Read(b)
 		conn.Close()
@@ -105,7 +106,7 @@ func TestOnlyServerSupportsNAWS(t *testing.T) {
 	}()
 	wg.Add(1)
 	go func() {
-		conn := telnet.NewConnection(server, []telnet.Option{telnet.NAWSOption})
+		conn := telnet.NewConnection(server, []telnet.Option{options.NAWSOption})
 		go io.Copy(ioutil.Discard, conn)
 		_, err := conn.Write(text)
 		if err != nil {
